@@ -56,20 +56,31 @@ public class BooksController : ControllerBase
 	[HttpPost]
 	public IActionResult Create(CreateBookDto dto)
 	{
-		var book = new Book(
-			dto.Title,
-			dto.Author,
-			dto.Price,
-			dto.Genre
-		);
+		if (_repository.ExistsByTitleAndAuthor(dto.Title, dto.Author))
+			return Conflict("A book with the same title and author already exists.");
 
-		_repository.Add(book);
+		try
+		{
+			var book = new Book(
+				dto.Title,
+				dto.Author,
+				dto.Price,
+				dto.Stock,
+				dto.Genre
+			);
 
-		return CreatedAtAction(
-			nameof(GetById),
-			new { id = book.Id },
-			null
-		);
+			_repository.Add(book);
+
+			return CreatedAtAction(
+				nameof(GetById),
+				new { id = book.Id },
+				null
+			);
+		}
+		catch (ArgumentException ex)
+		{
+			return BadRequest(ex.Message);
+		}
 	}
 
 	[HttpPut("{id}")]
@@ -79,17 +90,29 @@ public class BooksController : ControllerBase
 		if (book is null)
 			return NotFound();
 
-		book.Update(
-			dto.Title,
-			dto.Author,
-			dto.Price,
-			dto.Genre
-		);
+		if (_repository.ExistsByTitleAndAuthorExceptId(dto.Title, dto.Author, id))
+			return Conflict("Another book with the same title and author already exists.");
 
-		_repository.Update(book);
+		try
+		{
+			book.Update(
+				dto.Title,
+				dto.Author,
+				dto.Price,
+				dto.Stock,
+				dto.Genre
+			);
 
-		return NoContent();
+			_repository.Update(book);
+
+			return NoContent();
+		}
+		catch (ArgumentException ex)
+		{
+			return BadRequest(ex.Message);
+		}
 	}
+
 
 	[HttpDelete("{id}")]
 	public IActionResult Delete(Guid id)

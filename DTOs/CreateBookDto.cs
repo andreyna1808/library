@@ -9,14 +9,17 @@ public class CreateBookDto
 	// DataAnnotations:
 	// - Funcionam automaticamente com ModelState
 	// - Aparecem no Swagger
-	[Required]
+	[Required, MinLength(2), MaxLength(120)]
 	public string Title { get; set; }
 
-	[Required]
+	[Required, MinLength(2), MaxLength(120)]
 	public string Author { get; set; }
 
-	[Range(0.01, double.MaxValue)]
+	[Range(0, double.MaxValue)]
 	public decimal Price { get; set; }
+
+	[Range(0, int.MaxValue)]
+	public int Stock { get; set; }
 
 	[Required]
 	public BookGenre Genre { get; set; }

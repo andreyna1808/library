@@ -9,6 +9,8 @@ public class BookResponseDto
 	public string Title { get; set; }
 	public string Author { get; set; }
 	public decimal Price { get; set; }
+	public int Stock { get; set; }
 	public BookGenre Genre { get; set; }
 	public DateTime CreatedAt { get; set; }
+	public DateTime? UpdatedAt { get; set; }
 }

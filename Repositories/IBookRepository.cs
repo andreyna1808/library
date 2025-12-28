@@ -13,4 +13,11 @@ public interface IBookRepository
 	void Add(Book book);
 	void Update(Book book);
 	void Delete(Guid id);
+
+	bool ExistsByTitleAndAuthor(string title, string author);
+	bool ExistsByTitleAndAuthorExceptId(
+		string title,
+		string author,
+		Guid id
+	);
 }

@@ -1,16 +1,13 @@
 ﻿using LibraryApi.Domain.Entities;
-using System.Xml.Linq;
 
 namespace BookStore.Api.Repositories;
 
-/// Implementação simples em memória.
-/// Não depende de banco
 public class InMemoryBookRepository : IBookRepository
 {
-	// Lista simulando um banco de dados
 	private readonly List<Book> _books = new();
 
-	public IEnumerable<Book> GetAll() => _books;
+	public IEnumerable<Book> GetAll()
+		=> _books;
 
 	public Book? GetById(Guid id)
 		=> _books.FirstOrDefault(b => b.Id == id);
@@ -20,15 +17,35 @@ public class InMemoryBookRepository : IBookRepository
 
 	public void Update(Book book)
 	{
-		// Nada a fazer aqui porque:
-		// - O objeto já foi alterado
-		// - A lista mantém referência
+		var index = _books.FindIndex(b => b.Id == book.Id);
+		if (index >= 0)
+			_books[index] = book;
 	}
 
 	public void Delete(Guid id)
 	{
 		var book = GetById(id);
-		if (book is not null)
+		if (book != null)
 			_books.Remove(book);
+	}
+
+	public bool ExistsByTitleAndAuthor(string title, string author)
+	{
+		return _books.Any(b =>
+			b.Title.Equals(title, StringComparison.OrdinalIgnoreCase) &&
+			b.Author.Equals(author, StringComparison.OrdinalIgnoreCase)
+		);
+	}
+
+	public bool ExistsByTitleAndAuthorExceptId(
+		string title,
+		string author,
+		Guid id)
+	{
+		return _books.Any(b =>
+			b.Id != id &&
+			b.Title.Equals(title, StringComparison.OrdinalIgnoreCase) &&
+			b.Author.Equals(author, StringComparison.OrdinalIgnoreCase)
+		);
 	}
 }
